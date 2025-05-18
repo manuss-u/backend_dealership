@@ -26,7 +26,7 @@ const login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ error: messageInvalid })
     }
-    const token = generateToken()
+    const token = generateToken(user)
     res.status(200).json({ token })
   } catch (error) {
     console.error('Login error:', error)
@@ -64,6 +64,10 @@ const updateUser = async (req, res) => {
 
   if (!username || !email || !role) {
     return res.status(400).json({ error: 'All fields are required' })
+  }
+
+  if (!['admin', 'user'].includes(role)) {
+    return res.status(400).json({ error: 'Invalid role' })
   }
 
   try {
