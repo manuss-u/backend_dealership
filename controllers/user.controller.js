@@ -1,11 +1,15 @@
-import User, { validateRole } from '../models/user.model.js'
 import { generateToken } from '../utils/jwt.js'
+import { validateEmail } from '../utils/validations.js'
+import User, { allowedRoles, validateRole } from '../models/user.model.js'
 
 const register = async (req, res) => {
   const { username, password, email } = req.body
 
   try {
-    const user = new User({ username, password, email, role: 'dealer' })
+    const user = new User({ username, password, email, role: allowedRoles.DEALER })
+    if (!validateEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email format' })
+    }
     await user.save()
     res.status(201).json({ message: 'User registered successfully', id: user._id })
   } catch (error) {
