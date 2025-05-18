@@ -1,13 +1,13 @@
-import User from '../models/user.model.js'
+import User, { validateRole } from '../models/user.model.js'
 import { generateToken } from '../utils/jwt.js'
 
 const register = async (req, res) => {
   const { username, password, email } = req.body
 
   try {
-    const user = new User({ username, password, email })
+    const user = new User({ username, password, email, role: 'dealer' })
     await user.save()
-    res.status(201).json({ message: 'User registered successfully' })
+    res.status(201).json({ message: 'User registered successfully', id: user._id })
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
@@ -66,11 +66,8 @@ const updateUser = async (req, res) => {
     return res.status(400).json({ error: 'All fields are required' })
   }
 
-  if (!['admin', 'user'].includes(role)) {
-    return res.status(400).json({ error: 'Invalid role' })
-  }
-
   try {
+    validateRole(role)
     const user = await User.findByIdAndUpdate(id, { username, email, role }, { new: true })
     if (!user) {
       return res.status(404).json({ error: 'User not found' })
@@ -78,7 +75,7 @@ const updateUser = async (req, res) => {
     res.status(200).json(user)
   } catch (error) {
     console.error('Error updating user:', error)
-    res.status(500).json({ error: 'Server error' })
+    res.status(400).json({ error: `Error updating user: ${error.message}` })
   }
 }
 

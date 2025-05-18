@@ -1,6 +1,13 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 
+const allowedRoles = ['admin', 'dealer']
+const validateRole = (role) => {
+  if (!allowedRoles.includes(role)) {
+    throw new Error(`Invalid role: ${role}. Allowed roles are: ${allowedRoles.join(', ')}`)
+  }
+}
+
 const UserSchema = new mongoose.Schema(
   {
     username: {
@@ -19,7 +26,11 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'user'],
+      enum: allowedRoles,
+      validate: {
+        validator: validateRole,
+        message: (props) => `${props.value} is not a valid role!`
+      },
       default: 'user'
     }
   },
@@ -39,3 +50,6 @@ UserSchema.methods.comparePassword = async function (password) {
 const User = mongoose.model('User', UserSchema)
 
 export default User
+
+export { validateRole }
+
