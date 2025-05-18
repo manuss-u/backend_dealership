@@ -1,11 +1,15 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 
-const allowedRoles = ['admin', 'dealer']
+const allowedRoles = {
+  ADMIN: 'admin',
+  DEALER: 'dealer',
+}
 const validateRole = (role) => {
-  if (!allowedRoles.includes(role)) {
-    throw new Error(`Invalid role: ${role}. Allowed roles are: ${allowedRoles.join(', ')}`)
+  if (allowedRoles[role.toUpperCase()]) {
+    return true
   }
+  throw new Error(`Invalid role: ${role}`)
 }
 
 const UserSchema = new mongoose.Schema(
@@ -51,5 +55,5 @@ const User = mongoose.model('User', UserSchema)
 
 export default User
 
-export { validateRole }
+export { allowedRoles, validateRole }
 
