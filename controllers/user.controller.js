@@ -1,4 +1,4 @@
-import { generateToken } from '../utils/jwt.js'
+import { generateToken, verifyToken } from '../utils/jwt.js'
 import { validateEmail } from '../utils/validations.js'
 import User, { allowedRoles, validateRole } from '../models/user.model.js'
 
@@ -34,6 +34,23 @@ const login = async (req, res) => {
     res.status(200).json({ token })
   } catch (error) {
     console.error('Login error:', error)
+    res.status(500).json({ error: 'Server error' })
+  }
+}
+
+const checkLogin = async (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1]
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
+    const decoded = await verifyToken(token)
+    if (!decoded) {
+      return res.status(401).json({ error: 'Invalid or expired token' })
+    }
+    res.status(200).json({ message: 'User is logged in' })
+  } catch (error) {
+    console.error('Check login error:', error)
     res.status(500).json({ error: 'Server error' })
   }
 }
@@ -101,6 +118,7 @@ const deleteUser = async (req, res) => {
 const userController = {
   register,
   login,
+  checkLogin,
   getAllUsers,
   getUserById,
   updateUser,

@@ -7,6 +7,7 @@ const router = Router()
 
 router.post('/register', userController.register)
 router.post('/login', userController.login)
+router.get('/check-login', userController.checkLogin)
 
 router.use(authenticate)
 router.get('/', authorize([allowedRoles.ADMIN]), userController.getAllUsers)

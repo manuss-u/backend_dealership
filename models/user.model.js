@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 
 const allowedRoles = {
   ADMIN: 'admin',
-  DEALER: 'dealer',
+  DEALER: 'dealer'
 }
 const validateRole = (role) => {
   if (allowedRoles[role.toUpperCase()]) {
@@ -56,4 +56,3 @@ const User = mongoose.model('User', UserSchema)
 export default User
 
 export { allowedRoles, validateRole }
-
