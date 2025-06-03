@@ -19,6 +19,7 @@ const createClient = async (req, res) => {
 
 const getAllClients = async (req, res) => {
   try {
+    console.log('Fetching all clients')
     const clients = await Client.find()
     res.status(200).json(clients)
   } catch (error) {
